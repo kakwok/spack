@@ -80,7 +80,8 @@ class P2rTests(CMakePackage):
     #depends_on('intel-oneapi-compilers', when='backend=intel')
     depends_on('intel-tbb@2021.12.0', when='impl=tbb', type=('build', 'link', 'run'))
     depends_on('intel-tbb@2021.12.0', when='impl=alpaka backend=cpu', type='build')
-    depends_on('intel-oneapi-compilers@2024.1.0', when='impl=sycl backend=cpu', type=('build', 'link', 'run'))
+    #depends_on('intel-oneapi-compilers@2024.04.15', when='impl=sycl backend=cpu', type=('build', 'link', 'run'))
+    depends_on('intel-oneapi-compilers@2024.2.1', when='impl=sycl backend=cpu', type=('build', 'link', 'run'))
 
     # See https://spdx.org/licenses/ for a list.
     license("Apache-2.0")
