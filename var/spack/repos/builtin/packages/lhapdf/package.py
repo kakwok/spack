@@ -1,5 +1,4 @@
-# Copyright 2013-2024 Lawrence Livermore National Security, LLC and other
-# Spack Project Developers. See the top-level COPYRIGHT file for details.
+# Copyright Spack Project Developers. See COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
@@ -50,7 +49,7 @@ class Lhapdf(AutotoolsPackage):
         # Add -lintl if provided by gettext, otherwise libintl is provided by the system's glibc:
         if (
             self.spec.satisfies("+python")
-            and "gettext" in self.spec
+            and self.spec.satisfies("^gettext")
             and "intl" in self.spec["gettext"].libs.names
         ):
             env.append_flags("LDFLAGS", "-L" + self.spec["gettext"].prefix.lib)

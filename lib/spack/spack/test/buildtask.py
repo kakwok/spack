@@ -1,5 +1,4 @@
-# Copyright 2013-2024 Lawrence Livermore National Security, LLC and other
-# Spack Project Developers. See the top-level COPYRIGHT file for details.
+# Copyright Spack Project Developers. See COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
@@ -27,17 +26,19 @@ def test_build_task_errors(install_mockery):
     # Using a concretized package now means the request argument is checked.
     spec.concretize()
     assert spec.concrete
+
     with pytest.raises(TypeError, match="is not a valid build request"):
         inst.BuildTask(spec.package, None)
 
     # Using a valid package and spec, the next check is the status argument.
     request = inst.BuildRequest(spec.package, {})
+
     with pytest.raises(TypeError, match="is not a valid build status"):
         inst.BuildTask(spec.package, request, status="queued")
 
     # Now we can check that build tasks cannot be create when the status
     # indicates the task is/should've been removed.
-    with pytest.raises(spack.error.InstallError, match="Cannot create a build task"):
+    with pytest.raises(spack.error.InstallError, match="Cannot create a task"):
         inst.BuildTask(spec.package, request, status=inst.BuildStatus.REMOVED)
 
     # Also make sure to not accept an incompatible installed argument value.

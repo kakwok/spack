@@ -1,10 +1,10 @@
-# Copyright 2013-2024 Lawrence Livermore National Security, LLC and other
-# Spack Project Developers. See the top-level COPYRIGHT file for details.
+# Copyright Spack Project Developers. See COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 import sys
 
+import spack.build_systems.cmake
 from spack.package import *
 
 
@@ -131,5 +131,5 @@ class CMakeBuilder(spack.build_systems.cmake.CMakeBuilder):
     @run_after("install")
     def darwin_fix(self):
         # The shared library is not installed correctly on Darwin; fix this
-        if self.spec.satisfies("platform=darwin") and ("+shared" in self.spec):
+        if self.spec.satisfies("platform=darwin") and self.spec.satisfies("+shared"):
             fix_darwin_install_name(self.prefix.lib)
