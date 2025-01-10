@@ -68,20 +68,15 @@ class P2rTests(CMakePackage):
     variant('nthreads', default="96" ,description = 'Number of events CPU threads used in TBB impl only.')
 
     # Define dependencies based on the selected impl and backend
-    #depends_on('cmake@3.22.1', type='build')
-    depends_on('cmake', type='build')
+    depends_on('cmake@3.22.1:', type='build')
     #depends_on('kokkos', when='impl=kokkos')                             ## not using the official spack-kokkos
     depends_on('kokkos-nvcc-wrapper', when='impl=kokkos backend=nvidia')  ## using the spack nvcc wrapper
-    #depends_on('alpaka@0.9.0', when='impl=alpaka')                       ## need alpaka 1.2.0
-    depends_on('alpaka@1.2.0', when='impl=alpaka')
-    depends_on('cuda@11.6.2', when='backend=nvidia')
-    depends_on('nvhpc@22.7', when='impl=stdpar')
-    depends_on('hip@5.6.1', when='backend=amd')
-    #depends_on('intel-oneapi-compilers', when='backend=intel')
-    depends_on('intel-tbb@2021.12.0', when='impl=tbb', type=('build', 'link', 'run'))
-    depends_on('intel-tbb@2021.12.0', when='impl=alpaka backend=cpu', type='build')
-    #depends_on('intel-oneapi-compilers@2024.04.15', when='impl=sycl backend=cpu', type=('build', 'link', 'run'))
-    depends_on('intel-oneapi-compilers@2024.2.1', when='impl=sycl backend=cpu', type=('build', 'link', 'run'))
+    depends_on('alpaka@1.2.0:', when='impl=alpaka')
+    depends_on('cuda@11.6.2:', when='backend=nvidia')
+    depends_on('nvhpc@22.7:', when='impl=stdpar')
+    depends_on('hip@5.6.1:', when='backend=amd')
+    depends_on('intel-tbb@2021.12.0:', when='impl=tbb', type=('build', 'link', 'run'))
+    depends_on('intel-tbb@2021.12.0:', when='impl=alpaka backend=cpu', type='build')
 
     # See https://spdx.org/licenses/ for a list.
     license("Apache-2.0")
@@ -152,9 +147,6 @@ class P2rTests(CMakePackage):
                    args.append('-DCMAKE_CXX_STANDARD=17')
                    args.append('-DCMAKE_CXX_COMPILER=hipcc')
                    args.append('-D{0}=ON'.format(kokkos_amd_arch[self.spec.variants['hip-arch'].value]))  
-               elif backend == 'intel':
-                   ##WIP
-                   args.append('-DKokkos_ENABLE_SYCL=ON')
                elif backend == 'cpu':
                    args.append('-DKokkos_ENABLE_OPENMP=ON')
                    args.append('-DCMAKE_CXX_STANDARD=17')
@@ -173,11 +165,11 @@ class P2rTests(CMakePackage):
                    args.append('-DCMAKE_C_COMPILER=gcc')
                    args.append('-DCMAKE_CUDA_COMPILER=nvcc')
                    args.append('-DCMAKE_CUDA_ARCHITECTURES={0}'.format(self.spec.variants['cuda-arch'].value))
-               elif backend == 'amd':
+               #elif backend == 'amd':
                    #WIP
-                   args.append('-Dalpaka_ACC_GPU_HIP_ENABLE=ON')
-                   args.append('-DCMAKE_CXX_COMPILER=hipcc')
-                   args.append('-DCMAKE_HIP_ARCHITECTURES={0}'.format(self.spec.variants['hip-arch'].value))
+                   #args.append('-Dalpaka_ACC_GPU_HIP_ENABLE=ON')
+                   #args.append('-DCMAKE_CXX_COMPILER=hipcc')
+                   #args.append('-DCMAKE_HIP_ARCHITECTURES={0}'.format(self.spec.variants['hip-arch'].value))
                elif backend == 'cpu':
                    args.append('-Dalpaka_ACC_CPU_B_TBB_T_SEQ_ENABLE=ON')
                    args.append('-DCMAKE_CXX_STANDARD=17')
@@ -205,15 +197,9 @@ class P2rTests(CMakePackage):
     
            # Handling SYCL
            if impl == 'sycl':
-               if backend == 'intel':
-                   ##WIP
-                   args.append('-DENABLE_SYCL=ON')
-                   args.append('-DSYCL_COMPILER={0}'.format(self.spec['intel-oneapi-compilers'].prefix))
-               elif backend =='nvidia':
+               if backend =='nvidia':
                    args.append('-DCUDA_PATH={0}'.format(self.spec.variants["sycl_cuda_path"].value))  
                    args.append('-DSYCL_PATH={0}'.format(self.spec.variants["sycl_path"].value))  
-               elif backend == 'cpu':
-                   args.append('-DBACKEND=cpu')
                else:
                    raise InstallError(f"sycl implementation is only supported for backend = navidia and cpu, but got backend = {backend}")
     
